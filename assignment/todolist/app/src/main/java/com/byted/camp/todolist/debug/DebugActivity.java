@@ -7,6 +7,7 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -14,7 +15,11 @@ import android.widget.Toast;
 
 import com.byted.camp.todolist.R;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -65,7 +70,35 @@ public class DebugActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // TODO 把一段文本写入某个存储区的文件中，再读出来，显示在 fileText 上
-                fileText.setText("TODO");
+                fileText.setText("writing...");
+                File internal = getCacheDir();
+
+                try {
+                    File newFile = new File(internal,"helloworld.txt");
+                    newFile.createNewFile();
+                    Log.i("lalaland",String.valueOf(newFile.exists()));
+                    Log.i("lalaland",String.valueOf(newFile.isFile()));
+
+                    FileWriter fileWriter = new FileWriter(newFile);
+                    BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                    bufferedWriter.write("Hello World!");
+
+                    bufferedWriter.close();
+                    fileWriter.close();
+
+                    FileReader fileReader = new FileReader(newFile);
+                    BufferedReader bufferedReader = new BufferedReader(fileReader);
+                    String res = bufferedReader.readLine();
+                    fileText.setText(res);
+
+                    fileReader.close();
+                    bufferedReader.close();
+                    Log.i("file","closed");
+                } catch (IOException e) {
+                    fileText.setText("ERROR "+e.getMessage());
+                    e.printStackTrace();
+                }
+                //fileText.setText("TODO");
             }
         });
     }
